@@ -15,7 +15,8 @@ run-name: ${{ github.repository }} 🚀 -> ${{ github.ref }} triggered by ${{ gi
   #     - homolog
   #     - develop
 
-on: [push]
+on:
+  workflow_call:
 
 env:
   CI_REGISTRY_REPO: ${{ vars.CI_REGISTRY_REPO }}
