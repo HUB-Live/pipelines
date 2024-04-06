@@ -1,8 +1,26 @@
 name: Build and Deploy
 run-name: ${{ github.repository }} 🚀 -> ${{ github.ref }} triggered by ${{ github.event_name }}
+# on: 
+#   push:
+#     branches:
+#       - feature/*
+#       - bugfix/*
+#       - hotfix/*
+#       - feat/*
+#       - fix/*
+#       - bug/*
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - homolog
+  #     - develop
 
-on:
-  workflow_call:
+# on: [push]
+
+on: 
+  push:
+    branches:
+      - main
 
 env:
   CI_REGISTRY_REPO: ${{ vars.CI_REGISTRY_REPO }}
@@ -17,6 +35,8 @@ env:
   PROJECT_KEY: "hublive-backend-develop"
   CI_ENVIRONMENT_FULL: "develop"
   CI_PREFIX_ENV: "-develop"
+
+  # CI_ENV_PREFIX: ""
 
 jobs:
   Setup-Variables:
@@ -232,5 +252,8 @@ jobs:
           kubectl apply -f .kubernetes/ingress.yml
           kubectl apply -f .kubernetes/service.yml
           echo "artifact generated"
+
+          
+
 
 ### aadicionar environments futuramente quando assinar github pro https://docs.github.com/pt/actions/deployment/targeting-different-environments/using-environments-for-deployment

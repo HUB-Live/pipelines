@@ -13,10 +13,10 @@ env:
   CLUSTER_NAME: "cluster-hublive-develop"
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
   SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-  CI_ENV_PREFIX: "dev"
-  PROJECT_KEY: "hublive-backend-develop"
-  CI_ENVIRONMENT_FULL: "develop"
-  CI_PREFIX_ENV: "-develop"
+  CI_ENV_PREFIX: "hml"
+  PROJECT_KEY: "hub-live-next-homolog"
+  CI_ENVIRONMENT_FULL: "homolog"
+  CI_PREFIX_ENV: "-homolog"
 
 jobs:
   Setup-Variables:
@@ -81,9 +81,9 @@ jobs:
           ls -lart ${{ github.workspace }}
           cat local_vars.sh
           source ./local_vars.sh
-          npm install
-          npm run test
-          npm run test:cov
+          yarn
+          yarn test
+          yarn lint
       - name: Upload variables file
         uses: actions/upload-artifact@v4
         with:
@@ -232,5 +232,8 @@ jobs:
           kubectl apply -f .kubernetes/ingress.yml
           kubectl apply -f .kubernetes/service.yml
           echo "artifact generated"
+
+          
+
 
 ### aadicionar environments futuramente quando assinar github pro https://docs.github.com/pt/actions/deployment/targeting-different-environments/using-environments-for-deployment

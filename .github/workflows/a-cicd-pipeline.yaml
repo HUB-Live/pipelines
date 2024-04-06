@@ -1,0 +1,110 @@
+# name: Build and Deploy
+# run-name: ${{ github.repository }} 🚀 -> ${{ github.ref }} triggered by ${{ github.event_name }}
+# on: 
+#   push:
+#     branches:
+#       - main
+#       - homolog
+#       - develop
+
+# jobs:
+#   Setup-Variables:
+#     runs-on: kubernetes-dev-runner
+#     steps:
+#       - name: Check out repository code
+#         uses: actions/checkout@v4
+#       - name: List files in the repository
+#         run: |
+#           ls ${{ github.workspace }}
+
+
+
+# on:
+#   workflow_dispatch:
+# jobs:
+#   pass-secrets-to-workflow:
+#     uses: ./.github/workflows/called-workflow.yml
+#     secrets: inherit
+
+# on:
+#   workflow_call:
+# jobs:
+#   pass-secret-to-action:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Use a repo or org secret from the calling workflow.
+#         run: echo ${{ secrets.CALLING_WORKFLOW_SECRET }}
+
+
+
+# defaults:
+#   run:
+#     shell: bash
+#     working-directory: ./scripts
+
+
+# jobs:
+#   production-deploy:
+#     if: github.repository == 'octo-org/octo-repo-prod'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: '14'
+#       - run: npm install -g bats
+
+# - name: Clean install dependencies and build
+#   run: |
+#     npm ci
+#     npm run build
+
+# jobs: #upload artifact
+#   example-job:
+#     name: Save output
+#     runs-on: ubuntu-latest
+#     steps:
+#       - shell: bash
+#         run: |
+#           expr 1 + 1 > output.log
+#       - name: Upload output file
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: output-log-file
+#           path: output.log
+
+# jobs: #downaload artifact
+#   example-job:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Download a single artifact
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: output-log-file
+
+# name: Create envfile
+
+# on: [ push ]
+
+# jobs:
+
+#   create-envfile:
+ 
+#     runs-on: ubuntu-latest
+ 
+#     steps:
+#     - name: Make envfile
+#       uses: SpicyPizza/create-envfile@v2.0
+#       with:
+#         envkey_DEBUG: false
+#         envkey_SOME_API_KEY: "123456abcdef"
+#         envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+#         envkey_VARIABLE: ${{ vars.SOME_ACTION_VARIABLE }}
+#         some_other_variable: foobar
+#         directory: <directory_name>
+#         file_name: .env
+#         fail_on_empty: false
+#         sort_keys: false
+
+
+#${{ github.run_id }}-${{ github.run_attempt }}
