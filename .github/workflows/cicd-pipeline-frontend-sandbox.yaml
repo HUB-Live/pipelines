@@ -91,7 +91,7 @@ jobs:
 
   Docker-build:
     runs-on: ubuntu-latest
-    needs: [Setup-Variables, Unit-tests]
+    needs: [Setup-Variables]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
