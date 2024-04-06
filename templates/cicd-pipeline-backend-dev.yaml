@@ -1,0 +1,254 @@
+name: Build and Deploy
+run-name: ${{ github.repository }} 🚀 -> ${{ github.ref }} triggered by ${{ github.event_name }}
+# on: 
+#   push:
+#     branches:
+#       - feature/*
+#       - bugfix/*
+#       - hotfix/*
+#       - feat/*
+#       - fix/*
+#       - bug/*
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - homolog
+  #     - develop
+
+on: [push]
+
+env:
+  CI_REGISTRY_REPO: ${{ vars.CI_REGISTRY_REPO }}
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION_DEV }}
+  CI_REGISTRY_USER: "AWS"
+  CLUSTER_NAME: "cluster-hublive-develop"
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
+  SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+  CI_ENV_PREFIX: "dev"
+  PROJECT_KEY: "hublive-backend-develop"
+  CI_ENVIRONMENT_FULL: "develop"
+  CI_PREFIX_ENV: "-develop"
+
+  # CI_ENV_PREFIX: ""
+
+jobs:
+  Setup-Variables:
+    runs-on: kubernetes-dev-runner
+    outputs:
+      registry: ${{ steps.variables.outputs.registry }}
+      s3url: ${{ steps.variables.outputs.s3url }}
+    steps:
+      - name: Check out repository code
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        id: dependencies
+        run: |
+          sudo apt-get update
+          sudo wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && sudo unzip awscli-exe-linux-x86_64.zip && sudo ./aws/install
+          curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
+          sudo apt-get install gettext-base -y
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          export AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID}} && export AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} && export AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }}
+      - name: Generate variables file
+        id: variables
+        run: |
+          echo "export APP_VERSION=${CI_ENV_PREFIX}-$(node -p "require('./package.json').version")" >> local_vars.sh
+          echo "export APP_NAME=$(node -p "require('./package.json').name")" >> local_vars.sh
+          source local_vars.sh
+          echo "export CI_REGISTRY_REPO=${CI_REGISTRY_REPO}" >> local_vars.sh
+          echo "export CI_REGISTRY=${CI_REGISTRY_REPO}/${APP_NAME}" >> local_vars.sh
+          source local_vars.sh
+          echo "export CI_IMAGE_COMPLETE=${CI_REGISTRY}:${APP_VERSION}" >> local_vars.sh
+          echo "s3url=s3://hublive-env-files/${APP_NAME}/${CI_ENV_PREFIX}/.env " >> "$GITHUB_OUTPUT"
+          source local_vars.sh
+          echo "registry=$CI_IMAGE_COMPLETE" >> "$GITHUB_OUTPUT"
+      - name: Get env from s3
+        id: env
+        run: |
+          aws s3 cp ${{ steps.variables.outputs.s3url }} .env
+      - name: Upload variables file
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: variables-file
+          path: |
+            local_vars.sh
+            .env
+
+  Unit-tests:
+    runs-on: kubernetes-dev-runner
+    needs: [Setup-Variables]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Download artifact vars
+        uses: actions/download-artifact@v4
+        with:
+          name: variables-file
+      - name: install dependencies
+        run: |
+          curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
+      - name: Execute unit tests
+        run: |
+          ls -lart ${{ github.workspace }}
+          cat local_vars.sh
+          source ./local_vars.sh
+          npm install
+          npm run test
+          npm run test:cov
+      - name: Upload variables file
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-file
+          path: |
+            coverage
+
+  # Quality-gate:
+  #   runs-on: ubuntu-latest
+  #   needs: [Setup-Variables, Unit-tests]
+  #   steps:
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v4
+  #     - name: Download artifact vars
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: coverage-file
+  #     - name: install dependencies
+  #       run: |
+  #         export SONAR_SCANNER_VERSION=4.7.0.2747
+  #         export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+  #         curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
+  #         unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+  #         export PATH=$SONAR_SCANNER_HOME/bin:$PATH
+  #         export SONAR_SCANNER_OPTS="-server"
+  #         export SONAR_TOKEN=${{ secrets.SONAR_TOKEN_DEV }}
+  #     - name: run sonar
+  #       run: |
+  #         sonar-scanner -Dsonar.projectKey=${{ env.PROJECT_KEY }} -Dsonar.sources=${{ github.workspace }} -Dsonar.host.url=https://sonarqube.hub.live -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+
+
+  # Quality-gate:
+  #   runs-on: ubuntu-latest
+  #   needs: [Setup-Variables, Unit-tests]
+  #   steps:
+  #     - name: Check out repository code
+  #       uses: actions/checkout@v4
+  #     - name: Download artifact vars
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: coverage-file
+  #     - name: SonarQube Scan
+  #       uses: sonarsource/sonarqube-scan-action@master
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
+  #         SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+  #       with:
+  #         projectBaseDir: ${{ github.workspace }}
+  #         args: >
+  #           -Dsonar.projectKey=${{ env.PROJECT_KEY }}
+  #           -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+  #           -Dsonar.exclusions=**/coverage/**
+  #     - name: SonarQube Quality Gate check
+  #       id: sonarqube-quality-gate-check
+  #       uses: sonarsource/sonarqube-quality-gate-action@master
+  #       timeout-minutes: 5
+  #       env:
+  #        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
+  #        SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+  #       with:
+  #         projectBaseDir: ${{ github.workspace }}
+  #         args: >
+  #           -Dsonar.projectKey=${{ env.PROJECT_KEY }}
+  #           -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+  #           -Dsonar.exclusions=**/coverage/**
+  #     - name: "Example show SonarQube Quality Gate Status value"
+  #       run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+      
+
+  Docker-build:
+    runs-on: ubuntu-latest
+    needs: [Setup-Variables, Unit-tests]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Download artifact vars
+        uses: actions/download-artifact@v4
+        with:
+          name: variables-file
+      - name: Set up Variables
+        run: |
+          source local_vars.sh
+          echo ${{needs.Setup-variables.outputs.registry}}
+      - name: Login to ECR
+        id: ecr
+        uses: elgohr/ecr-login-action@v3
+        with:
+          access_key: ${{ vars.AWS_ACCESS_KEY_ID }}
+          secret_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          region: ${{ vars.AWS_DEFAULT_REGION_DEV }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ steps.ecr.outputs.registry }}
+          username: ${{ steps.ecr.outputs.username }}
+          password: ${{ steps.ecr.outputs.password }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{needs.Setup-variables.outputs.registry}}
+
+
+  Kubernetes-deploy:
+    runs-on: kubernetes-dev-runner
+    needs: [Setup-Variables, Docker-build]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Download artifact vars
+        uses: actions/download-artifact@v4
+        with:
+          name: variables-file
+      - name: Set up Variables and dependencies
+        run: |
+          ls -lart
+          pwd
+          export CI_JOB_ID=$RANDOM
+          source local_vars.sh
+          sudo wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && sudo unzip awscli-exe-linux-x86_64.zip && sudo ./aws/install
+          sudo apt-get update && sudo apt-get install gettext-base -y
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | sudo bash
+          export AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID}} && export AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} && export AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }}
+      - name: Get kubeconfig from eks
+        id: kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_DEFAULT_REGION }} --name ${{ env.CLUSTER_NAME }}
+      - name: Deploy to kubernetes
+        run: |
+          ls -lart
+          source local_vars.sh
+          echo "change env variables from templates"
+          cat .kubernetes/deployment.yml.tpl | envsubst > .kubernetes/deployment.yml
+          cat .kubernetes/ingress.yml.tpl | envsubst > .kubernetes/ingress.yml
+          cat .kubernetes/service.yml.tpl | envsubst > .kubernetes/service.yml
+          cat .kubernetes/deployment.yml
+          cat .kubernetes/ingress.yml
+          cat .kubernetes/service.yml
+          kubectl apply -f .kubernetes/deployment.yml
+          kubectl apply -f .kubernetes/ingress.yml
+          kubectl apply -f .kubernetes/service.yml
+          echo "artifact generated"
+
+          
+
+
+### aadicionar environments futuramente quando assinar github pro https://docs.github.com/pt/actions/deployment/targeting-different-environments/using-environments-for-deployment
