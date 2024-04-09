@@ -60,34 +60,34 @@ jobs:
             local_vars.sh
             .env
 
-  # Unit-tests:
-  #   runs-on: kubernetes-dev-runner
-  #   needs: [Setup-Variables]
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #     - name: Download artifact vars
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: variables-file
-  #     - name: install dependencies
-  #       run: |
-  #         curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
-  #         sudo npm install --global yarn
-  #     - name: Execute unit tests
-  #       run: |
-  #         ls -lart ${{ github.workspace }}
-  #         cat local_vars.sh
-  #         source ./local_vars.sh
-  #         yarn
-  #         yarn test
-  #         yarn lint
-  #     - name: Upload variables file
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: coverage-file
-  #         path: |
-  #           coverage
+  Unit-tests:
+    runs-on: kubernetes-dev-runner
+    needs: [Setup-Variables]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Download artifact vars
+        uses: actions/download-artifact@v4
+        with:
+          name: variables-file
+      - name: install dependencies
+        run: |
+          curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
+          sudo npm install --global yarn
+      - name: Execute unit tests
+        run: |
+          ls -lart ${{ github.workspace }}
+          cat local_vars.sh
+          source ./local_vars.sh
+          yarn
+          yarn test
+          yarn lint
+      - name: Upload variables file
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-file
+          path: |
+            coverage
 
   Docker-build:
     runs-on: ubuntu-latest
