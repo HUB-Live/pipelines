@@ -221,6 +221,7 @@ jobs:
         run: |
           ls -lart
           source local_vars.sh
+          export CI_JOB_ID=$RANDOM
           echo "change env variables from templates"
           cat .kubernetes/deployment.yml.tpl | envsubst > .kubernetes/deployment.yml
           cat .kubernetes/ingress.yml.tpl | envsubst > .kubernetes/ingress.yml
