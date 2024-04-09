@@ -116,42 +116,42 @@ jobs:
   #         sonar-scanner -Dsonar.projectKey=${{ env.PROJECT_KEY }} -Dsonar.sources=${{ github.workspace }} -Dsonar.host.url=https://sonarqube.hub.live -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
 
 
-  # Quality-gate:
-  #   runs-on: ubuntu-latest
-  #   needs: [Setup-Variables, Unit-tests]
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #     - name: Download artifact vars
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: coverage-file
-  #     - name: SonarQube Scan
-  #       uses: sonarsource/sonarqube-scan-action@master
-  #       env:
-  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
-  #         SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-  #       with:
-  #         projectBaseDir: ${{ github.workspace }}
-  #         args: >
-  #           -Dsonar.projectKey=${{ env.PROJECT_KEY }}
-  #           -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
-  #           -Dsonar.exclusions=**/coverage/**
-  #     - name: SonarQube Quality Gate check
-  #       id: sonarqube-quality-gate-check
-  #       uses: sonarsource/sonarqube-quality-gate-action@master
-  #       timeout-minutes: 5
-  #       env:
-  #        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
-  #        SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-  #       with:
-  #         projectBaseDir: ${{ github.workspace }}
-  #         args: >
-  #           -Dsonar.projectKey=${{ env.PROJECT_KEY }}
-  #           -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
-  #           -Dsonar.exclusions=**/coverage/**
-  #     - name: "Example show SonarQube Quality Gate Status value"
-  #       run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+  Quality-gate:
+    runs-on: ubuntu-latest
+    needs: [Setup-Variables, Unit-tests]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Download artifact vars
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-file
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: ${{ github.workspace }}
+          args: >
+            -Dsonar.projectKey=${{ env.PROJECT_KEY }}
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+            -Dsonar.exclusions=**/coverage/**
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
+         SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: ${{ github.workspace }}
+          args: >
+            -Dsonar.projectKey=${{ env.PROJECT_KEY }}
+            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info
+            -Dsonar.exclusions=**/coverage/**
+      - name: "Example show SonarQube Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
       
 
   Docker-build:
