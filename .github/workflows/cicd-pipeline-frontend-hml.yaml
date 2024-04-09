@@ -65,7 +65,7 @@ jobs:
 
   Unit-tests:
     runs-on: kubernetes-dev-runner
-    needs: [Setup-Variables, Quality-gate]
+    needs: [Setup-Variables]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
