@@ -5,13 +5,13 @@ on:
   workflow_call:
 
 env:
-  CI_REGISTRY_REPO: ${{ vars.CI_REGISTRY_REPO }}
-  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION_DEV }}
+  CI_REGISTRY_REPO: ${{ vars.CI_REGISTRY_REPO_PROD }}
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID_PROD }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_PROD }}
+  AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION_PROD }}
   CI_REGISTRY_USER: "AWS"
-  CLUSTER_NAME: "cluster-hublive-develop"
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }}
+  CLUSTER_NAME: "cluster-hublive-production"
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_DEV }} ## alterar futuramente
   SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
   CI_ENV_PREFIX: "prd"
   PROJECT_KEY: "hub-live-next-production"
