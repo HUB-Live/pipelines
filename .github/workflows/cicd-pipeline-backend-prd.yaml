@@ -171,9 +171,9 @@ jobs:
         id: ecr
         uses: elgohr/ecr-login-action@v3
         with:
-          access_key: ${{ vars.AWS_ACCESS_KEY_ID }}
-          secret_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-          region: ${{ vars.AWS_DEFAULT_REGION_DEV }}
+          access_key: ${{ vars.AWS_ACCESS_KEY_ID_PRD }}
+          secret_access_key: ${{ secrets.AWS_ACCESS_KEY_PRD }}
+          region: ${{ vars.AWS_DEFAULT_REGION_PRD }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
