@@ -212,7 +212,6 @@ jobs:
           sudo wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && sudo unzip awscli-exe-linux-x86_64.zip && sudo ./aws/install
           sudo apt-get update && sudo apt-get install gettext-base -y
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | sudo bash
           export AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID}} && export AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} && export AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }}
       - name: Get kubeconfig from eks
         id: kubeconfig
@@ -222,6 +221,7 @@ jobs:
         run: |
           ls -lart
           source local_vars.sh
+          export AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID}} && export AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} && export AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }}
           export CI_JOB_ID=$RANDOM
           echo "change env variables from templates"
           cat .kubernetes/deployment.yml.tpl | envsubst > .kubernetes/deployment.yml
