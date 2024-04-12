@@ -222,6 +222,7 @@ jobs:
           ls -lart
           source local_vars.sh
           export CI_JOB_ID=$RANDOM
+          export AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID}} && export AWS_SECRET_ACCESS_KEY=${{ env.AWS_SECRET_ACCESS_KEY }} && export AWS_DEFAULT_REGION=${{ env.AWS_DEFAULT_REGION }}
           echo "change env variables from templates"
           cat .kubernetes/deployment.yml.tpl | envsubst > .kubernetes/deployment.yml
           cat .kubernetes/ingress.yml.tpl | envsubst > .kubernetes/ingress.yml
