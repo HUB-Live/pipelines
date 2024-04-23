@@ -20,7 +20,7 @@ env:
 
 jobs:
   Setup-Variables:
-    runs-on: ubuntu-latest
+    runs-on: kubernetes-dev-runner
     outputs:
       registry: ${{ steps.variables.outputs.registry }}
       s3url: ${{ steps.variables.outputs.s3url }}
