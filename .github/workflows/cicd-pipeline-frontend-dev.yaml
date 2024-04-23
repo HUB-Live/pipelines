@@ -245,7 +245,7 @@ jobs:
           approvers: Dev
           minimum-approvals: 1
           issue-title: "Merging from develop to homolog"
-          issue-body: "Please approve or deny the deployment in repo ${{ github.repository }} from branch ${{ github.ref }} to homolog"
+          issue-body: "Please approve or deny the deployment from branch develop to homolog"
           exclude-workflow-initiator-as-approver: true
       - uses: actions/checkout@master
       - name: Merge development -> staging

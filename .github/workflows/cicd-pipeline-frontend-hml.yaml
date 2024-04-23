@@ -246,7 +246,7 @@ jobs:
           approvers: Dev
           minimum-approvals: 1
           issue-title: "Merging from homolog to production"
-          issue-body: "Please approve or deny the deployment in repo ${{ github.repository }} from branch ${{ github.ref }} to production"
+          issue-body: "Please approve or deny the deployment from branch homolog to production"
           exclude-workflow-initiator-as-approver: true
       - uses: actions/checkout@master
       - name: Merge development -> staging
