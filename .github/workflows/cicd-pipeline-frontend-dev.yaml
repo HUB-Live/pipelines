@@ -244,8 +244,8 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: Dev
           minimum-approvals: 1
-          issue-title: "Merging from develop to homolog"
-          issue-body: "Please approve or deny the deployment from branch develop to homolog"
+          issue-title: "Deploying v1.3.5 to prod from staging"
+          issue-body: "Please approve or deny the deployment of version v1.3.5."
           exclude-workflow-initiator-as-approver: true
       - uses: actions/checkout@master
       - name: Merge development -> staging
