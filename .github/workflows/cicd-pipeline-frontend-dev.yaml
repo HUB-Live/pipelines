@@ -64,7 +64,7 @@ jobs:
             .env
 
   Unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: kubernetes-dev-runner
     needs: [Setup-Variables]
     steps:
       - name: Check out repository code
@@ -194,7 +194,7 @@ jobs:
 
 
   Kubernetes-deploy:
-    runs-on: ubuntu-latest
+    runs-on: kubernetes-dev-runner
     needs: [Setup-Variables, Docker-build]
     steps:
       - name: Check out repository code
