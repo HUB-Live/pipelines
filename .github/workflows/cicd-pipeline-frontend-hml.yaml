@@ -245,7 +245,7 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: Dev
           minimum-approvals: 1
-          issue-title: "Merging from {{ github.ref }} to develop"
+          issue-title: "Merging from ${{ github.ref }} to develop"
           issue-body: "Please approve or deny the deployment in repo ${{ github.repository }} from branch ${{ github.ref }} to develop"
           exclude-workflow-initiator-as-approver: true
       - uses: actions/checkout@master
