@@ -234,7 +234,4 @@ jobs:
           kubectl apply -f .kubernetes/service.yml
           echo "artifact generated"
 
-          
-
-
 ### aadicionar environments futuramente quando assinar github pro https://docs.github.com/pt/actions/deployment/targeting-different-environments/using-environments-for-deployment
