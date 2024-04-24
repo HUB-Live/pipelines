@@ -242,13 +242,13 @@ jobs:
       - uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: gustavo-ianguas, lucasgsz
+          approvers: gustavo-ianguas, lucasgsz, italo-holanda
           minimum-approvals: 1
-          issue-title: "Deploying v1.3.5 to prod from staging"
-          issue-body: "Please approve or deny the deployment of version v1.3.5."
+          issue-title: "Merge develop to homolog"
+          issue-body: "Please approve or deny the merge"
           exclude-workflow-initiator-as-approver: true
       - uses: actions/checkout@master
-      - name: Merge development -> staging
+      - name: Merge develop -> homolog
         uses: devmasx/merge-branch@master
         with:
           type: now
