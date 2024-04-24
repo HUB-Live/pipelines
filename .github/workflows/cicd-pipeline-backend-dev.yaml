@@ -241,7 +241,7 @@ jobs:
       - uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: gustavo-ianguas, lucasgsz, italo-holanda
+          approvers: gustavo-ianguas, ifilipe-lype, italo-holanda
           minimum-approvals: 1
           issue-title: "Merge develop to homolog"
           issue-body: "Please approve or deny the merge"
