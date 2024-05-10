@@ -234,24 +234,35 @@ jobs:
           kubectl apply -f .kubernetes/service.yml
           echo "artifact generated"
 
-  gitflow-run:
+  slackNotification:
+    name: Slack Notification
     runs-on: ubuntu-latest
-    needs: [Kubernetes-deploy]
     steps:
-      - uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: gustavo-ianguas, ifilipe-lype, italo-holanda
-          minimum-approvals: 1
-          issue-title: "Merge develop to homolog"
-          issue-body: "Please approve or deny the merge"
-          exclude-workflow-initiator-as-approver: true
-      - uses: actions/checkout@master
-      - name: Merge develop -> homolog
-        uses: devmasx/merge-branch@master
-        with:
-          type: now
-          target_branch: homolog
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: "Deployment to develop was successful, progress the flow to homolog after validating changes in develop environment"
+
+  # gitflow-run:
+  #   runs-on: ubuntu-latest
+  #   needs: [Kubernetes-deploy]
+  #   steps:
+  #     - uses: trstringer/manual-approval@v1
+  #       with:
+  #         secret: ${{ github.TOKEN }}
+  #         approvers: gustavo-ianguas, ifilipe-lype, italo-holanda
+  #         minimum-approvals: 1
+  #         issue-title: "Merge develop to homolog"
+  #         issue-body: "Please approve or deny the merge"
+  #         exclude-workflow-initiator-as-approver: true
+  #     - uses: actions/checkout@master
+  #     - name: Merge develop -> homolog
+  #       uses: devmasx/merge-branch@master
+  #       with:
+  #         type: now
+  #         target_branch: homolog
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
 
 ### aadicionar environments futuramente quando assinar github pro https://docs.github.com/pt/actions/deployment/targeting-different-environments/using-environments-for-deployment
