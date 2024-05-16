@@ -113,7 +113,7 @@ jobs:
           export SONAR_TOKEN=${{ secrets.SONAR_TOKEN_DEV }}
       - name: run sonar
         run: |
-          ./home/runner/.sonar/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.projectKey=${{ env.PROJECT_KEY }} -Dsonar.sources=${{ github.workspace }} -Dsonar.host.url=https://sonarqube.hub.live -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info -Dsonar.exclusions=**/coverage/**
+          /home/runner/.sonar/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner -Dsonar.projectKey=${{ env.PROJECT_KEY }} -Dsonar.sources=${{ github.workspace }} -Dsonar.host.url=https://sonarqube.hub.live -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info -Dsonar.exclusions=**/coverage/**
 
 
   # Quality-gate:
