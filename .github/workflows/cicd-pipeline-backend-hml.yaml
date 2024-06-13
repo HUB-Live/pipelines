@@ -246,7 +246,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_COLOR: ${{ job.status }}
           SLACK_USERNAME: actions-bot
-          SLACK_TITLE: "Deployment to homolog was successful, progress the flow to production after validating changes in homoloh environment"
+          SLACK_TITLE: "Deployment to homolog was successful, progress the flow to production after validating changes in homolog environment"
 
 
   # gitflow-run:
