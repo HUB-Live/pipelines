@@ -170,6 +170,20 @@ jobs:
           kubectl apply -f .kubernetes/service.yml
           echo "artifact generated"
 
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    needs: [Kubernetes-deploy]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: Success-Bot
+          SLACK_TITLE: "Deployment to sandbox was successful"
+
   slackNotificationFails:
     name: Slack Notification
     runs-on: ubuntu-latest
