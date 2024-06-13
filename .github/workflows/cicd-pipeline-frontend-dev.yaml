@@ -75,10 +75,8 @@ jobs:
           name: variables-file
       - name: install dependencies
         run: |
-          echo "This step will fail"
-          exit 1
-#          curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
-#          sudo npm install --global yarn
+          curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
+          sudo npm install --global yarn
       - name: Execute unit tests
         run: |
           ls -lart ${{ github.workspace }}

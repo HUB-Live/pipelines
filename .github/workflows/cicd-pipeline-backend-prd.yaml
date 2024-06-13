@@ -248,4 +248,19 @@ jobs:
           SLACK_USERNAME: actions-bot
           SLACK_TITLE: "Deployment to production was successful, validate changes"
 
+  slackNotificationFails:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [Kubernetes-deploy, Docker-build, Unit-tests, Setup-Variables]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_COLOR: failure
+          SLACK_USERNAME: Failed-bot
+          SLACK_TITLE: "Pipeline failed, check pipeline errors"
+          
 ### aadicionar environments futuramente quando assinar github pro https://docs.github.com/pt/actions/deployment/targeting-different-environments/using-environments-for-deployment
