@@ -47,7 +47,7 @@ jobs:
           echo "export CI_REGISTRY=${CI_REGISTRY_REPO}/${APP_NAME}" >> local_vars.sh
           source local_vars.sh
           echo "export CI_IMAGE_COMPLETE=${CI_REGISTRY}:${APP_VERSION}" >> local_vars.sh
-          echo "s3url=s3://hublive-env-files/${APP_NAME}/${CI_ENV_PREFIX}/.env " >> "$GITHUB_OUTPUT"
+          echo "s3url=s3://hublive-env-files/${APP_NAME}/${CI_ENV_PREFIX} " >> "$GITHUB_OUTPUT"
           source local_vars.sh
           echo "registry=$CI_IMAGE_COMPLETE" >> "$GITHUB_OUTPUT"
       - name: Get env from s3
