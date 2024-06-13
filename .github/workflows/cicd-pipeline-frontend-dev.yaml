@@ -76,7 +76,7 @@ jobs:
       - name: install dependencies
         run: |
           curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash - && sudo apt-get install -y nodejs
-          sudo npm install --global yarn
+#          sudo npm install --global yarn
       - name: Execute unit tests
         run: |
           ls -lart ${{ github.workspace }}
@@ -246,8 +246,23 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_COLOR: ${{ job.status }}
-          SLACK_USERNAME: actions-bot
+          SLACK_USERNAME: Success-Bot
           SLACK_TITLE: "Deployment to develop was successful, progress the flow to homolog after validating changes in develop environment"
+
+  slackNotificationFails:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [Kubernetes-deploy, Docker-build, Unit-tests, Setup-Variables]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_USERNAME: Failed-bot
+          SLACK_TITLE: "Deployment to develop failed, check pipeline errors"
 
 
   # gitflow-run:
